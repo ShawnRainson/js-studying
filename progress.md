@@ -368,3 +368,376 @@ console.log("10" + 20 + 30);
 Здесь особенно интересно в какой момент JavaScript начинает работать со строкой.
 
 После твоих ответов перейдём к практической части Дня 1: несколько задач на исправление кода и небольшая функция, где нужно будет самостоятельно применить приведение типов и ===.
+
+🥋 День 2 — Массивы: методы, изменение и перебор
+
+Сегодня не будем заново разбирать, что такое массив и как обратиться к элементу по индексу — это ты уже знаешь.
+
+Наша цель на сегодня:
+
+уверенно различать методы изменения массива;
+понимать, какие методы изменяют исходный массив, а какие создают новый;
+освоить push, pop, shift, unshift;
+разобраться с slice и splice;
+закрепить includes, indexOf;
+начать уверенно использовать for...of.
+1. Напоминание: массив — это упорядоченная коллекция
+let fruits = ["apple", "banana", "orange"];
+
+Индексы начинаются с нуля:
+
+console.log(fruits[0]); // apple
+console.log(fruits[1]); // banana
+console.log(fruits[2]); // orange
+
+Количество элементов:
+
+console.log(fruits.length); // 3
+2. Добавление элементов
+push() — добавить в конец
+let fruits = ["apple", "banana"];
+
+fruits.push("orange");
+
+console.log(fruits);
+
+Результат:
+
+["apple", "banana", "orange"]
+
+push() изменяет исходный массив.
+
+Можно добавить сразу несколько элементов:
+
+fruits.push("kiwi", "mango");
+unshift() — добавить в начало
+let fruits = ["banana", "orange"];
+
+fruits.unshift("apple");
+
+console.log(fruits);
+
+Результат:
+
+["apple", "banana", "orange"]
+3. Удаление элементов
+pop() — удалить последний элемент
+let fruits = ["apple", "banana", "orange"];
+
+let removed = fruits.pop();
+
+console.log(removed); // orange
+console.log(fruits);  // ["apple", "banana"]
+
+Важный момент: pop() не только меняет массив, но и возвращает удалённый элемент.
+
+shift() — удалить первый элемент
+let fruits = ["apple", "banana", "orange"];
+
+let removed = fruits.shift();
+
+console.log(removed); // apple
+console.log(fruits);  // ["banana", "orange"]
+4. Схема четырёх основных методов
+
+Запомни:
+
+push()    → добавить в конец
+pop()     → удалить с конца
+
+unshift() → добавить в начало
+shift()   → удалить с начала
+Метод	Действие	Изменяет массив
+push()	добавить в конец	Да
+pop()	удалить с конца	Да
+unshift()	добавить в начало	Да
+shift()	удалить с начала	Да
+5. includes() — содержится ли элемент
+let fruits = ["apple", "banana", "orange"];
+
+console.log(fruits.includes("banana")); // true
+console.log(fruits.includes("kiwi"));   // false
+
+Метод возвращает boolean:
+
+true
+false
+
+Можно использовать в условии:
+
+if (fruits.includes("banana")) {
+    console.log("Банан есть в массиве");
+}
+6. indexOf() — найти индекс элемента
+let fruits = ["apple", "banana", "orange"];
+
+console.log(fruits.indexOf("banana")); // 1
+console.log(fruits.indexOf("kiwi"));   // -1
+
+Если элемента нет, возвращается:
+
+-1
+
+Пример:
+
+if (fruits.indexOf("banana") !== -1) {
+    console.log("Элемент найден");
+}
+
+Но для простой проверки наличия чаще удобнее:
+
+fruits.includes("banana")
+7. slice() — получить часть массива без изменения оригинала
+let numbers = [10, 20, 30, 40, 50];
+
+let part = numbers.slice(1, 4);
+
+console.log(part);
+console.log(numbers);
+
+Результат:
+
+[20, 30, 40]
+[10, 20, 30, 40, 50]
+
+Важно:
+
+slice(start, end)
+
+end не включается.
+
+То есть:
+
+slice(1, 4)
+
+берёт индексы:
+
+1, 2, 3
+slice() без второго аргумента
+let numbers = [10, 20, 30, 40, 50];
+
+console.log(numbers.slice(2));
+
+Результат:
+
+[30, 40, 50]
+Копирование массива
+let copy = numbers.slice();
+
+Теперь copy — новый массив.
+
+8. splice() — изменяет массив
+
+splice() может:
+
+удалять элементы;
+добавлять элементы;
+заменять элементы.
+
+Общий синтаксис:
+
+array.splice(start, deleteCount, item1, item2, ...);
+Удаление
+let numbers = [10, 20, 30, 40, 50];
+
+numbers.splice(1, 2);
+
+console.log(numbers);
+
+Результат:
+
+[10, 40, 50]
+
+Почему?
+
+Начинаем с индекса 1:
+
+10, [20, 30], 40, 50
+
+Удалили два элемента.
+
+Добавление
+let numbers = [10, 20, 40, 50];
+
+numbers.splice(2, 0, 30);
+
+console.log(numbers);
+
+Результат:
+
+[10, 20, 30, 40, 50]
+
+0 означает: ничего не удалять.
+
+Замена
+let numbers = [10, 20, 30];
+
+numbers.splice(1, 1, 99);
+
+console.log(numbers);
+
+Результат:
+
+[10, 99, 30]
+9. slice() vs splice()
+
+Это часто путают.
+
+slice()
+→ создаёт новый массив
+→ оригинал не меняет
+
+splice()
+→ изменяет оригинальный массив
+→ может удалять, добавлять и заменять
+
+Сравнение:
+
+let numbers = [1, 2, 3, 4];
+
+let result = numbers.slice(1, 3);
+
+console.log(result);  // [2, 3]
+console.log(numbers); // [1, 2, 3, 4]
+
+А:
+
+let numbers = [1, 2, 3, 4];
+
+numbers.splice(1, 2);
+
+console.log(numbers); // [1, 4]
+10. for...of — перебор элементов
+
+Ты уже использовал похожий цикл в своей функции поиска чётных чисел.
+
+let numbers = [10, 20, 30];
+
+for (let number of numbers) {
+    console.log(number);
+}
+
+Результат:
+
+10
+20
+30
+
+Здесь number — это сам элемент, а не индекс.
+
+Сравни:
+
+Обычный for
+for (let i = 0; i < numbers.length; i++) {
+    console.log(numbers[i]);
+}
+for...of
+for (let number of numbers) {
+    console.log(number);
+}
+
+for...of удобнее, когда индекс не нужен.
+
+11. Важная тема: изменяемый массив или новый массив?
+
+Посмотри:
+
+let numbers = [1, 2, 3];
+
+numbers.push(4);
+
+console.log(numbers);
+
+Исходный массив изменён:
+
+[1, 2, 3, 4]
+
+А slice():
+
+let numbers = [1, 2, 3];
+
+let copy = numbers.slice();
+
+copy.push(4);
+
+console.log(numbers); // [1, 2, 3]
+console.log(copy);    // [1, 2, 3, 4]
+
+Потому что copy — отдельный массив.
+
+🧠 Теория закончилась. Теперь ты.
+
+Пока не запускай код. Сначала ответь теоретически.
+
+Вопрос 1
+
+Что выведет код?
+
+let numbers = [10, 20, 30];
+
+let removed = numbers.pop();
+
+console.log(removed);
+console.log(numbers);
+Вопрос 2
+
+Что выведет код?
+
+let fruits = ["apple", "banana", "orange"];
+
+fruits.unshift("kiwi");
+fruits.push("mango");
+fruits.shift();
+
+console.log(fruits);
+
+Распиши изменения по шагам.
+
+Вопрос 3
+
+В чём разница между:
+
+slice()
+splice()
+
+Объясни своими словами и приведи короткий пример каждого.
+
+Вопрос 4
+
+Что выведет:
+
+let numbers = [1, 2, 3, 4, 5];
+
+let result = numbers.slice(1, 4);
+
+console.log(result);
+console.log(numbers);
+
+Почему в result не попадёт элемент с индексом 4?
+
+Вопрос 5
+
+Что выведет:
+
+let numbers = [10, 20, 30];
+
+for (let number of numbers) {
+    console.log(number);
+}
+
+Что содержит переменная number: индекс или значение элемента?
+
+Вопрос 6 — небольшая ловушка
+
+Что выведет код?
+
+let numbers = [1, 2, 3];
+
+let copy = numbers;
+
+copy.push(4);
+
+console.log(numbers);
+console.log(copy);
+
+Подумай внимательно: это копия массива или две переменные, указывающие на один и тот же массив?
