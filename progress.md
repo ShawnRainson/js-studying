@@ -1666,3 +1666,605 @@ for...of
 Это одна из самых важных комбинаций для дальнейшего JavaScript — особенно когда дойдём до map, filter, API и DOM.
 
 Присылай ответы на вопросы и весь код практики одним сообщением. Я проверю всё по порядку и отдельно отмечу места, где стоит остановиться и закрепить материал. 🥋
+
+🥋 День 4 — Функции в JavaScript
+
+Ты уже умеешь создавать обычные функции:
+
+function sum(a, b) {
+    return a + b;
+}
+
+Сегодня сделаем следующий шаг и разберём, как функции устроены глубже и почему функции в JavaScript настолько важны.
+
+1. Параметры и аргументы
+
+Например:
+
+function greet(name) {
+    console.log(`Hello, ${name}!`);
+}
+
+greet("Alex");
+
+Здесь:
+
+function greet(name)
+
+name — параметр функции.
+
+А здесь:
+
+greet("Alex");
+
+"Alex" — аргумент, который мы передали функции.
+
+Можно запомнить:
+
+Параметр — переменная в объявлении функции.
+Аргумент — конкретное значение при вызове.
+
+2. Несколько параметров
+function sum(a, b) {
+    return a + b;
+}
+
+console.log(sum(10, 20));
+
+Здесь:
+
+a = 10
+b = 20
+
+Результат:
+
+30
+3. Параметры по умолчанию
+
+Можно задать значение, которое будет использоваться, если аргумент не передали:
+
+function greet(name = "Guest") {
+    console.log(`Hello, ${name}!`);
+}
+
+greet("Alex");  // Hello, Alex!
+greet();        // Hello, Guest!
+
+Это называется default parameter.
+
+Ещё пример:
+
+function multiply(a, b = 2) {
+    return a * b;
+}
+
+multiply(5);    // 10
+multiply(5, 3); // 15
+4. Function Expression
+
+Функцию можно сохранить в переменную:
+
+const sum = function(a, b) {
+    return a + b;
+};
+
+console.log(sum(2, 3));
+
+Здесь функция является значением, которое хранится в переменной sum.
+
+Сравни:
+
+Function Declaration
+function sum(a, b) {
+    return a + b;
+}
+Function Expression
+const sum = function(a, b) {
+    return a + b;
+};
+
+Обе формы используются постоянно.
+
+5. Arrow Functions
+
+Теперь одна из самых важных конструкций современного JavaScript.
+
+Вместо:
+
+function sum(a, b) {
+    return a + b;
+}
+
+можно написать:
+
+const sum = (a, b) => {
+    return a + b;
+};
+
+А если функция состоит из одного выражения, можно ещё короче:
+
+const sum = (a, b) => a + b;
+
+Это называется неявный return.
+
+То есть:
+
+const square = x => x * x;
+
+означает примерно:
+
+const square = function(x) {
+    return x * x;
+};
+Важный момент
+
+Вот это:
+
+const sum = (a, b) => a + b;
+
+возвращает результат автоматически.
+
+А здесь:
+
+const sum = (a, b) => {
+    a + b;
+};
+
+результат не возвращается.
+
+Нужен:
+
+const sum = (a, b) => {
+    return a + b;
+};
+6. Когда параметр один
+
+Скобки можно опустить:
+
+const square = x => x * x;
+
+Вместо:
+
+const square = (x) => x * x;
+
+Но если параметров несколько:
+
+const sum = (a, b) => a + b;
+
+скобки обязательны.
+
+7. Функции могут возвращать что угодно
+
+Не только числа.
+
+Строку:
+function getName() {
+    return "Alex";
+}
+Boolean:
+function isAdult(age) {
+    return age >= 18;
+}
+Массив:
+function getNumbers() {
+    return [1, 2, 3];
+}
+Объект:
+function createUser(name, age) {
+    return {
+        name: name,
+        age: age
+    };
+}
+
+Можно даже короче:
+
+function createUser(name, age) {
+    return {
+        name,
+        age
+    };
+}
+8. Функция как значение
+
+Это очень важная идея JavaScript.
+
+Функцию можно:
+
+положить в переменную;
+передать в другую функцию;
+вернуть из другой функции.
+
+Например:
+
+const greet = function() {
+    console.log("Hello!");
+};
+
+Теперь greet содержит функцию.
+
+Можно передать её другой функции:
+
+function execute(fn) {
+    fn();
+}
+
+execute(greet);
+
+Получим:
+
+Hello!
+
+Функция greet здесь называется callback — функция, переданная другой функции.
+
+9. Callback
+
+Например:
+
+function processNumber(number, callback) {
+    const result = callback(number);
+    console.log(result);
+}
+
+function double(x) {
+    return x * 2;
+}
+
+processNumber(5, double);
+
+Происходит:
+
+5
+↓
+double(5)
+↓
+10
+
+double — callback.
+
+То же самое можно написать с arrow function:
+
+processNumber(5, x => x * 2);
+
+Это очень важная концепция, потому что именно callbacks активно используются в:
+
+map()
+filter()
+find()
+forEach()
+10. Rest parameter ...
+
+Иногда мы не знаем заранее, сколько аргументов передадут функции.
+
+Например:
+
+function sum(...numbers) {
+    console.log(numbers);
+}
+
+Теперь:
+
+sum(1, 2, 3);
+
+получим:
+
+[1, 2, 3]
+
+А:
+
+sum(10, 20, 30, 40, 50);
+
+получим:
+
+[10, 20, 30, 40, 50]
+
+...numbers собирает все оставшиеся аргументы в массив.
+
+Поэтому можно сделать:
+
+function sum(...numbers) {
+    let result = 0;
+
+    for (let number of numbers) {
+        result += number;
+    }
+
+    return result;
+}
+
+console.log(sum(1, 2, 3, 4));
+
+Результат:
+
+10
+🧠 Теоретические вопросы
+
+Теперь проверим понимание.
+
+Вопрос 1
+
+Что выведет?
+
+function greet(name) {
+    console.log(`Hello, ${name}`);
+}
+
+greet("Alex");
+
+Что здесь является параметром, а что аргументом?
+
+Вопрос 2
+
+Что выведет?
+
+function multiply(a, b = 2) {
+    return a * b;
+}
+
+console.log(multiply(5));
+console.log(multiply(5, 3));
+Вопрос 3
+
+В чём разница?
+
+function sum(a, b) {
+    return a + b;
+}
+
+и
+
+const sum = (a, b) => a + b;
+Вопрос 4 🔥
+
+Что выведет?
+
+const test = (a, b) => {
+    a + b;
+};
+
+console.log(test(2, 3));
+
+Почему?
+
+Вопрос 5
+
+Что такое callback?
+
+Объясни своими словами на примере:
+
+function execute(fn) {
+    fn();
+}
+Вопрос 6
+
+Что выведет?
+
+function show(...numbers) {
+    console.log(numbers);
+}
+
+show(1, 2, 3, 4);
+
+Какой тип данных будет у numbers?
+
+Вопрос 7 🔥
+
+Что здесь происходит?
+
+const double = x => x * 2;
+
+const result = double(5);
+
+Объясни пошагово.
+
+💻 Практика
+
+Теперь код.
+
+Задание 1 — параметры
+
+Напиши функцию:
+
+greet(name, age)
+
+которая выводит:
+
+Hello, Alex! You are 25 years old.
+
+Для:
+
+greet("Alex", 25);
+Задание 2 — default parameter
+
+Создай:
+
+function greet(name = "Guest")
+
+Чтобы:
+
+greet("Alex");
+
+выводил:
+
+Hello, Alex
+
+а:
+
+greet();
+
+выводил:
+
+Hello, Guest
+Задание 3 — Function Expression
+
+Создай функцию square через Function Expression:
+
+const square = ...
+
+Она должна принимать число и возвращать его квадрат.
+
+Например:
+
+console.log(square(5));
+
+Результат:
+
+25
+Задание 4 — Arrow Function
+
+Создай:
+
+const isAdult = ...
+
+которая принимает возраст и возвращает:
+
+true
+
+если возраст >= 18, иначе:
+
+false
+
+Например:
+
+console.log(isAdult(20)); // true
+console.log(isAdult(15)); // false
+Задание 5 — Arrow Function + массив
+
+Создай функцию:
+
+getFirst(numbers)
+
+которая возвращает первый элемент массива.
+
+Например:
+
+console.log(getFirst([10, 20, 30]));
+
+Результат:
+
+10
+
+Попробуй сделать её именно через arrow function.
+
+🔥 Задание 6 — callback
+
+Есть функция:
+
+function processNumber(number, callback) {
+    return callback(number);
+}
+
+Создай callback, который умножает число на 2.
+
+Затем:
+
+console.log(processNumber(10, ...));
+
+должно вывести:
+
+20
+
+Попробуй передать callback как arrow function прямо при вызове.
+
+🔥 Задание 7 — callback + массив
+
+Создай функцию:
+
+processNumbers(numbers, callback)
+
+Она должна пройти по массиву и применить callback к каждому числу.
+
+Например:
+
+console.log(processNumbers([1, 2, 3], ...));
+
+Если callback умножает число на 2, результат должен быть:
+
+[2, 4, 6]
+
+Пока не используй map() самостоятельно.
+
+Попробуй сделать через обычный for...of.
+
+Подсказка:
+
+let result = [];
+
+for (let number of numbers) {
+    // что-то здесь
+}
+
+return result;
+🥋 Задание 8 — rest parameter
+
+Напиши функцию:
+
+sumAll(...)
+
+которая принимает любое количество чисел и возвращает их сумму.
+
+Например:
+
+console.log(sumAll(1, 2, 3));
+
+→ 6
+
+console.log(sumAll(10, 20, 30, 40));
+
+→ 100
+
+Обязательно используй:
+
+...numbers
+🏆 Финальный мини-проект — «Обработчик пользователей»
+
+У нас есть:
+
+let users = [
+    { name: "Alex", age: 25 },
+    { name: "John", age: 17 },
+    { name: "Anna", age: 30 },
+    { name: "Mike", age: 15 }
+];
+
+Нужно создать функцию:
+
+processUsers(users, callback)
+
+Она должна:
+
+пройти по всем пользователям;
+передать каждого пользователя в callback;
+собрать результаты в новый массив;
+вернуть этот массив.
+
+Например, callback:
+
+user => user.name
+
+должен дать:
+
+["Alex", "John", "Anna", "Mike"]
+
+А callback:
+
+user => user.age >= 18
+
+должен дать:
+
+[true, false, true, false]
+Главное условие
+
+Не используй map().
+
+Мы специально сами реализуем упрощённую версию map, чтобы ты понял, как callback работает внутри.
+
+🎯 Что нужно прислать мне
+
+Можешь одним сообщением прислать:
+
+ответы на 7 теоретических вопросов;
+код заданий 1–8;
+код финального мини-проекта.
+
+Я проверю всё целиком, укажу ошибки без повторения уже освоенного материала, и если День 4 пройден — перейдём к следующей теме. 🥋
