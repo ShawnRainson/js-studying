@@ -2268,3 +2268,582 @@ user => user.age >= 18
 код финального мини-проекта.
 
 Я проверю всё целиком, укажу ошибки без повторения уже освоенного материала, и если День 4 пройден — перейдём к следующей теме. 🥋
+
+🥋 День 5. Современный JavaScript (ES6+)
+1. Template literals — шаблонные строки
+Ты уже встречал такой синтаксис:
+let name = "Alex";
+let age = 25;
+
+console.log(`Hello, ${name}! You are ${age} years old.`);
+
+
+Обрати внимание на обратные кавычки ` вместо обычных кавычек.
+Внутри можно вставлять выражения через ${...}:
+console.log(`2 + 3 = ${2 + 3}`);
+// 2 + 3 = 5
+
+
+Можно даже вызывать функции:
+const double = number => number * 2;
+
+console.log(`Double: ${double(5)}`);
+// Double: 10
+
+
+Это удобнее, чем соединять строки через +.
+
+2. Destructuring — деструктуризация массивов
+Допустим, у нас есть массив:
+const numbers = [10, 20, 30];
+
+const first = numbers[0];
+const second = numbers[1];
+
+console.log(first);  // 10
+console.log(second); // 20
+
+
+Можно записать короче:
+const numbers = [10, 20, 30];
+
+const [first, second, third] = numbers;
+
+console.log(first);  // 10
+console.log(second); // 20
+console.log(third);  // 30
+
+
+JavaScript берёт элементы массива по порядку и присваивает их переменным.
+Пропуск элементов
+const numbers = [10, 20, 30];
+
+const [first, , third] = numbers;
+
+console.log(first); // 10
+console.log(third); // 30
+
+
+Второй элемент пропущен.
+Значения по умолчанию
+const numbers = [10];
+
+const [first, second = 100] = numbers;
+
+console.log(first);  // 10
+console.log(second); // 100
+
+
+Значение 100 используется, потому что второго элемента нет.
+
+3. Destructuring — деструктуризация объектов
+Раньше мы писали:
+const user = {
+    name: "Alex",
+    age: 25,
+    city: "London"
+};
+
+const name = user.name;
+const age = user.age;
+
+
+Теперь можно так:
+const user = {
+    name: "Alex",
+    age: 25,
+    city: "London"
+};
+
+const { name, age } = user;
+
+console.log(name); // Alex
+console.log(age);  // 25
+
+
+Важное отличие от массива: в объекте переменные соответствуют именам свойств, а не позиции.
+Можно выбрать другое имя переменной:
+const { name: userName } = user;
+
+console.log(userName); // Alex
+
+
+Здесь name — имя свойства, а userName — новая переменная.
+Значения по умолчанию
+const user = {
+    name: "Alex"
+};
+
+const { name, age = 18 } = user;
+
+console.log(name); // Alex
+console.log(age);  // 18
+
+
+Если свойства age нет или оно равно undefined, используется значение по умолчанию.
+
+4. Destructuring в параметрах функций
+Деструктуризацию можно использовать прямо в параметрах.
+Вместо:
+function printUser(user) {
+    console.log(user.name);
+    console.log(user.age);
+}
+
+printUser({ name: "Alex", age: 25 });
+
+
+Можно написать:
+function printUser({ name, age }) {
+    console.log(name);
+    console.log(age);
+}
+
+printUser({ name: "Alex", age: 25 });
+
+
+Функция получает объект, но сразу извлекает из него name и age.
+Это особенно удобно, когда объект содержит много свойств, а функции нужны только некоторые из них.
+
+5. Spread ... — разворачивание массива
+Ты уже использовал ... в rest-параметрах:
+function sumAll(...numbers) {
+    // ...
+}
+
+
+Но у ... есть и другое применение.
+Например, объединение массивов:
+const first = [1, 2, 3];
+const second = [4, 5, 6];
+
+const combined = [...first, ...second];
+
+console.log(combined);
+// [1, 2, 3, 4, 5, 6]
+
+
+Spread разворачивает элементы массивов в новый массив.
+Копирование массива
+const numbers = [1, 2, 3];
+
+const copy = [...numbers];
+
+copy.push(4);
+
+console.log(numbers); // [1, 2, 3]
+console.log(copy);    // [1, 2, 3, 4]
+
+
+В отличие от let copy = numbers, здесь создаётся новый массив.
+Но помни: это поверхностная копия. Если внутри массива лежат объекты, они по-прежнему могут быть общими для обоих массивов.
+
+6. Spread ... — работа с объектами
+Копирование объекта
+const user = {
+    name: "Alex",
+    age: 25
+};
+
+const copy = { ...user };
+
+copy.age = 30;
+
+console.log(user.age); // 25
+console.log(copy.age); // 30
+
+
+Создан новый объект с теми же свойствами верхнего уровня.
+Добавление свойств
+const user = {
+    name: "Alex",
+    age: 25
+};
+
+const updatedUser = {
+    ...user,
+    city: "London"
+};
+
+console.log(updatedUser);
+
+
+Результат:
+{
+    name: "Alex",
+    age: 25,
+    city: "London"
+}
+
+
+Исходный объект user не изменился.
+Переопределение свойств
+const user = {
+    name: "Alex",
+    age: 25
+};
+
+const updatedUser = {
+    ...user,
+    age: 30
+};
+
+console.log(updatedUser.age); // 30
+
+
+Если одинаковое свойство указано несколько раз, обычно побеждает последнее значение.
+Поэтому порядок важен:
+const first = { ...user, age: 30 }; // age: 30
+const second = { age: 30, ...user }; // age: 25
+
+
+
+7. Rest ... — оставшиеся элементы
+В деструктуризации массивов ... позволяет собрать остаток элементов:
+const numbers = [10, 20, 30, 40];
+
+const [first, ...rest] = numbers;
+
+console.log(first); // 10
+console.log(rest);  // [20, 30, 40]
+
+
+А в объектах:
+const user = {
+    name: "Alex",
+    age: 25,
+    city: "London"
+};
+
+const { name, ...otherInfo } = user;
+
+console.log(name);      // Alex
+console.log(otherInfo); // { age: 25, city: "London" }
+
+
+Важно: в этих примерах ...rest собирает оставшиеся элементы или свойства в новый массив или объект.
+Как различать spread и rest?
+- Spread разворачивает содержимое: const copy = [...numbers].
+- Rest собирает остаток: const [first, ...rest] = numbers.
+Символ одинаковый, но роль определяется контекстом.
+
+8. Optional chaining ?.
+Представим, что у пользователя может отсутствовать адрес.
+const user = {
+    name: "Alex"
+};
+
+console.log(user.address.city);
+
+
+Этот код вызовет ошибку: user.address равен undefined, а у него нельзя прочитать city.
+Решение:
+console.log(user.address?.city);
+
+
+Результат:
+undefined
+
+
+Оператор ?. останавливает обращение, если значение слева от него равно null или undefined.
+Можно использовать и для цепочки вложенных свойств:
+const user = {
+    address: {
+        city: "London"
+    }
+};
+
+console.log(user.address?.city); // London
+
+
+И для необязательного вызова метода:
+user.sayHello?.();
+
+
+Если sayHello отсутствует или равен null/undefined, вызова не произойдёт. Но если свойство существует и не является функцией, возникнет ошибка.
+
+9. Nullish coalescing ??
+Допустим, у пользователя может не быть имени:
+const user = {};
+
+const name = user.name ?? "Guest";
+
+console.log(name); // Guest
+
+
+?? возвращает правую часть, только если левая равна null или undefined.
+Сравни с ||:
+console.log(0 || 100);  // 100
+console.log(0 ?? 100);  // 0
+
+console.log("" || "Guest"); // Guest
+console.log("" ?? "Guest"); // ""
+
+console.log(null ?? "Guest"); // Guest
+console.log(undefined ?? "Guest"); // Guest
+
+
+Почему это важно?
+|| считает 0, false и "" ложными значениями. А ?? не заменяет их, потому что они не являются null или undefined.
+Используй ??, когда нужно задать значение по умолчанию именно для отсутствующего значения.
+
+10. Сокращённая запись свойств объекта
+Раньше:
+const name = "Alex";
+const age = 25;
+
+const user = {
+    name: name,
+    age: age
+};
+
+
+Современная запись:
+const name = "Alex";
+const age = 25;
+
+const user = {
+    name,
+    age
+};
+
+
+Если имя переменной совпадает с именем свойства, его можно указать один раз.
+Это называется property shorthand.
+Ещё пример:
+function createUser(name, age) {
+    return { name, age };
+}
+
+console.log(createUser("Alex", 25));
+
+
+
+🧠 Контрольные вопросы
+Попробуй ответить своими словами и предсказать результаты.
+Вопрос 1 — деструктуризация массива
+const numbers = [10, 20, 30];
+
+const [a, , c] = numbers;
+
+console.log(a);
+console.log(c);
+
+
+Что выведется и почему?
+Вопрос 2 — деструктуризация объекта
+const user = {
+    name: "Alex",
+    age: 25
+};
+
+const { name: userName, city = "London" } = user;
+
+console.log(userName);
+console.log(city);
+
+
+Что выведется? Чем name отличается от userName?
+Вопрос 3 — spread
+const numbers = [1, 2, 3];
+const copy = [...numbers];
+
+copy.push(4);
+
+console.log(numbers);
+console.log(copy);
+
+
+Почему массивы разные?
+Вопрос 4 — порядок spread
+const user = {
+    name: "Alex",
+    age: 25
+};
+
+const first = { ...user, age: 30 };
+const second = { age: 30, ...user };
+
+console.log(first.age);
+console.log(second.age);
+
+
+Почему результаты различаются?
+Вопрос 5 — optional chaining
+const user = {
+    name: "Alex"
+};
+
+console.log(user.address?.city);
+
+
+Что выведется? Почему не будет ошибки?
+Вопрос 6 — ?? против ||
+console.log(0 || 10);
+console.log(0 ?? 10);
+
+console.log(false || true);
+console.log(false ?? true);
+
+
+Предскажи все четыре результата и объясни разницу.
+Вопрос 7 — rest
+const numbers = [5, 10, 15, 20];
+
+const [first, ...rest] = numbers;
+
+console.log(first);
+console.log(rest);
+
+
+Что делает ...rest?
+Вопрос 8 — параметры функции
+function printUser({ name, age }) {
+    console.log(`${name}: ${age}`);
+}
+
+printUser({ name: "Anna", age: 22 });
+
+
+Что получит функция и что выведет?
+
+💻 Практические задания
+Задание 1 — шаблонная строка
+Создай переменные:
+const name = "Alex";
+const age = 25;
+const city = "London";
+
+
+Выведи одной шаблонной строкой:
+Alex is 25 years old and lives in London.
+
+
+Задание 2 — деструктуризация массива
+Дан массив:
+const colors = ["red", "green", "blue", "yellow"];
+
+
+Используя деструктуризацию, создай переменные firstColor и thirdColor.
+Выведи их в консоль.
+Задание 3 — деструктуризация объекта
+Дан объект:
+const user = {
+    name: "Anna",
+    age: 28,
+    city: "Prague"
+};
+
+
+Извлеки в отдельные переменные name и city.
+Затем извлеки age, назвав переменную userAge.
+Задание 4 — функция с деструктуризацией
+Напиши функцию printProduct, которая получает объект товара:
+{
+    name: "Laptop",
+    price: 1000
+}
+
+
+Функция должна выводить:
+Laptop costs 1000
+
+
+Используй деструктуризацию прямо в параметрах функции.
+Задание 5 — копирование и объединение массивов
+Даны:
+const first = [1, 2, 3];
+const second = [4, 5, 6];
+
+
+Создай новый массив combined, объединив оба массива через spread.
+Затем создай независимую копию copy, добавь в неё число 7 и проверь, что combined не изменился.
+Задание 6 — копирование объекта
+Дан объект:
+const user = {
+    name: "Alex",
+    age: 25,
+    city: "London"
+};
+
+
+Создай updatedUser, который:
+- содержит все свойства user;
+- имеет возраст 26;
+- содержит новое свойство job со значением "Developer".
+Используй spread. Исходный объект менять нельзя.
+Задание 7 — optional chaining и ??
+Дан объект:
+const user = {
+    name: "Alex",
+    address: {
+        city: "Prague"
+    }
+};
+
+
+Выведи город пользователя, а если адреса или города нет, используй "Unknown".
+Сделай так, чтобы выражение не вызывало ошибку при отсутствии address.
+Проверь решение на двух объектах: с адресом и без адреса.
+Задание 8 — rest и spread
+Напиши функцию:
+function calculateTotal(...prices) {
+    // ...
+}
+
+
+Она должна принимать любое количество цен и возвращать их сумму.
+Затем создай массив:
+const prices = [10, 20, 30];
+
+
+Вызови функцию, передав элементы массива через spread:
+calculateTotal(...prices);
+
+
+Результат должен быть 60.
+
+🏆 Финальный мини-проект — обработчик профиля пользователя
+Есть исходный объект:
+const user = {
+    name: "Alex",
+    age: 25,
+    address: {
+        city: "Prague",
+        street: "Main Street"
+    },
+    skills: ["JavaScript", "HTML", "CSS"]
+};
+
+
+Создай функцию createUserSummary(user), которая возвращает новый объект, содержащий:
+- name — имя пользователя;
+- age — возраст;
+- city — город или "Unknown", если адреса нет;
+- firstSkill — первый навык или "No skills", если навыков нет;
+- isAdult — true, если возраст не меньше 18, иначе false.
+Условия:
+1. Используй деструктуризацию объекта.
+2. Используй optional chaining ?..
+3. Используй ?? для значений по умолчанию.
+4. Не изменяй исходный объект.
+5. Создай второй объект без address и с пустым массивом skills, чтобы проверить обработку отсутствующих данных.
+Пример ожидаемого результата для исходного пользователя:
+{
+    name: "Alex",
+    age: 25,
+    city: "Prague",
+    firstSkill: "JavaScript",
+    isAdult: true
+}
+
+
+Для пользователя без адреса и навыков должны быть city: "Unknown" и firstSkill: "No skills".
+
+🎯 Что прислать на проверку
+Одним сообщением:
+1. Ответы на 8 контрольных вопросов.
+2. Код заданий 1–8.
+3. Финальный мини-проект с двумя проверками.
+Не переживай, если где-то запутаешься в ..., ?. или ?? — это как раз то, что мы сегодня закрепляем. Проверю решения, отмечу реальные ошибки и не буду заставлять тебя повторять то, что ты уже хорошо знаешь.
+Удачи, ученик. Работаем! 🥋
