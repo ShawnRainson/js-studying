@@ -1,30 +1,29 @@
 //🏆 Финальный мини-проект — обработчик профиля пользователя
-const user = {
+const user1 = {
     name: "Alex",
     age: 25,
-    address: {
-        city: "Prague",
-        street: "Main Street"
-    },
-    skills: ["JavaScript", "HTML", "CSS"]
+    address: { city: "Prague" },
+    skills: ["JavaScript", "HTML"]
 };
 
 const user2 = {
-    name: "Alex",
-    age: 25,
-    address: {
-        street: "Main Street"
-    },
+    name: "Anna",
+    age: 17,
     skills: []
+};
+
+const user3 = {
+    name: "Mike",
+    age: 30
 };
 
 function createUserSummary(user) {
     const newUserObject = {};
-    const { name, age, address, skills: FirstSkill} = user;
+    const { name, age, address, skills: firstSkill} = user;
     newUserObject.name = name;
     newUserObject.age = age;
-    newUserObject.city = address.city ?? "Unknown";
-    newUserObject.FirstSkill = FirstSkill[0] ?? "No skills";
+    newUserObject.city = address?.city ?? "Unknown";
+    newUserObject.firstSkill = firstSkill?.[0] ?? "No skills";
     if (newUserObject.age >= 18) {
         newUserObject.isAdult = true;
     } else {
@@ -33,5 +32,6 @@ function createUserSummary(user) {
     return newUserObject;
 };
 
-console.log(createUserSummary(user));
+console.log(createUserSummary(user1));
 console.log(createUserSummary(user2));
+console.log(createUserSummary(user3));
