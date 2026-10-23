@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мой список задач</title>
+
+    <style>
+        .completed {
+            color: green;
+            text-decoration: line-through;
+        }
+
+        li {
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+    </style>
+
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <h1>Мои задачи</h1>
+
+    <form id="taskForm">
+        <input id="taskInput" type="text" placeholder="Новая задача">
+        <button type="submit">Добавить задачу</button>
+    </form>
+
+    <ul id="taskList"></ul>
+
+    <p id="counter"></p>
+</body>
+</html>

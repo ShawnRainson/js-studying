@@ -3415,3 +3415,594 @@ const tasks = [
 3. Код финального мини-проекта.
 Если код получается длинным, можешь отправить один блок с script.js и указать, к какому заданию относится каждый фрагмент. Проверю логику, результаты и возможные ошибки отдельно от стилистических замечаний.
 И главное: сегодня не нужно учить всё наизусть. Важно понять связь: JavaScript получает элемент через DOM, меняет его или создаёт новый, а браузер отображает результат. На следующем уроке добавим обработчики событий — и страница начнёт реагировать на действия пользователя. 💪
+
+День 7. События в JavaScript (Events)
+
+
+
+
+
+
+
+
+
+1. addEventListener()
+
+Как подписаться на событие и выполнить функцию в нужный момент.
+
+
+
+
+
+
+
+
+
+
+
+2. click, input, submit
+
+Реакция на нажатия, ввод текста и отправку формы.
+
+
+
+
+
+
+
+
+
+
+
+3. Объект события и preventDefault()
+
+Как узнать подробности события и управлять стандартным поведением браузера.
+
+
+
+Весь урок — в этом сообщении. В конце будут контрольные вопросы, восемь практических заданий и мини-проект. Можешь выполнить всё и прислать одним сообщением.
+
+Часть 1. Что такое событие?
+Событие (event) — это то, что произошло в браузере: пользователь нажал кнопку, ввёл символ, отправил форму, переместил мышь и так далее.
+
+Например, в HTML есть кнопка:
+<button id="myButton">Нажми меня</button>
+
+
+Найдём её в JavaScript:
+const button = document.querySelector("#myButton");
+
+
+Но пока ничего не произойдёт, когда пользователь нажмёт кнопку. Мы только нашли элемент и сохранили ссылку на него.
+
+Чтобы реагировать на нажатие, используем addEventListener().
+Часть 2. addEventListener()
+Общий синтаксис:
+element.addEventListener("eventName", callback);
+
+
+Здесь:
+- element — элемент, за которым наблюдаем;
+- "eventName" — название события;
+- callback — функция, которую браузер вызовет, когда событие произойдёт.
+Пример:
+const button = document.querySelector("#myButton");
+
+button.addEventListener("click", function () {
+    console.log("Кнопка нажата!");
+});
+
+
+Когда пользователь нажмёт кнопку, в консоли появится сообщение.
+
+То же самое со стрелочной функцией:
+button.addEventListener("click", () => {
+    console.log("Кнопка нажата!");
+});
+
+
+Оба варианта корректны.
+Важный нюанс: мы передаём функцию, а не вызываем её
+Сравни:
+button.addEventListener("click", sayHello);
+
+
+И:
+button.addEventListener("click", sayHello());
+
+
+В первом случае браузер получит функцию sayHello и вызовет её при событии.
+
+Во втором случае sayHello() вызовется сразу, а результат её выполнения будет передан в addEventListener(). Обычно это не то, что нам нужно.
+
+Посмотри на полный пример:
+<button id="myButton">Поздороваться</button>
+<p id="message"></p>
+
+<script src="script.js" defer></script>
+
+
+const button = document.querySelector("#myButton");
+const message = document.querySelector("#message");
+
+function sayHello() {
+    message.textContent = "Привет, ученик!";
+}
+
+button.addEventListener("click", sayHello);
+
+
+Теперь текст изменится только после нажатия кнопки.
+
+Запомни: addEventListener() не запускает обработчик сразу. Он регистрирует функцию, которую браузер вызовет при событии.
+
+Часть 3. Событие click
+click происходит, когда пользователь нажимает на элемент.
+
+Например, создадим счётчик кликов:
+<p id="counter">0</p>
+<button id="increase">Увеличить</button>
+
+
+const counter = document.querySelector("#counter");
+const increaseButton = document.querySelector("#increase");
+
+let count = 0;
+
+increaseButton.addEventListener("click", () => {
+    count++;
+    counter.textContent = count;
+});
+
+
+Что происходит при каждом нажатии?
+1. count++ увеличивает число на единицу.
+2. counter.textContent = count обновляет текст на странице.
+Обрати внимание на разделение ответственности: переменная хранит данные, а textContent отображает их пользователю.
+
+Это уже знакомые тебе переменные и DOM, только теперь они работают вместе с событиями.
+
+Часть 4. Событие input
+Событие input происходит, когда пользователь изменяет значение поля ввода.
+
+HTML:
+<input id="nameInput" type="text" placeholder="Введи имя">
+<p id="greeting"></p>
+
+
+JavaScript:
+const nameInput = document.querySelector("#nameInput");
+const greeting = document.querySelector("#greeting");
+
+nameInput.addEventListener("input", () => {
+    greeting.textContent = `Привет, ${nameInput.value}!`;
+});
+
+
+Здесь новое свойство — .value.
+- textContent — текст внутри элемента.
+- value — текущее значение поля ввода.
+Если пользователь введёт Alex, на странице появится Привет, Alex!.
+
+Можно также очистить поле:
+nameInput.value = "";
+
+
+Важно: input срабатывает по мере изменения значения. Событие change обычно срабатывает, когда изменение считается завершённым, например после подтверждения нового значения поля или потери им фокуса — конкретное поведение зависит от типа элемента.
+
+Часть 5. Объект события event
+Браузер передаёт обработчику объект события. Обычно его называют event или сокращённо e.
+button.addEventListener("click", (event) => {
+    console.log(event);
+});
+
+
+В объекте события содержится информация о произошедшем событии.
+
+Например:
+button.addEventListener("click", (event) => {
+    console.log(event.type);
+    console.log(event.target);
+});
+
+
+- event.type — тип события, например "click".
+- event.target — элемент, на котором произошло событие.
+- event.currentTarget — элемент, на котором зарегистрирован текущий обработчик.
+Для начала главное запомнить разницу между target и currentTarget.
+
+Представь кнопку с текстом внутри:
+<button id="buyButton">
+    Купить <strong>сейчас</strong>
+</button>
+
+
+Если пользователь нажмёт прямо на слово «сейчас», event.target может оказаться элементом strong. А event.currentTarget будет кнопкой, на которой зарегистрирован обработчик.
+
+Пример:
+const buyButton = document.querySelector("#buyButton");
+
+buyButton.addEventListener("click", (event) => {
+    console.log("Цель события:", event.target);
+    console.log("Обработчик установлен на:", event.currentTarget);
+});
+
+
+Это особенно пригодится позже, когда мы будем обрабатывать клики по вложенным элементам.
+
+Часть 6. Формы и submit
+Допустим, у нас есть форма:
+<form id="loginForm">
+    <input id="username" type="text" placeholder="Имя">
+    <button type="submit">Отправить</button>
+</form>
+
+<p id="result"></p>
+
+
+Можно обработать отправку формы:
+const form = document.querySelector("#loginForm");
+const username = document.querySelector("#username");
+const result = document.querySelector("#result");
+
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    result.textContent = `Привет, ${username.value}!`;
+});
+
+
+Что делает event.preventDefault()?
+У браузера есть стандартное поведение для разных событий. При обычной отправке формы браузер может отправить данные и перезагрузить страницу или перейти на другой URL.
+
+preventDefault() отменяет стандартное действие события, если оно отменяемо.
+
+В нашем примере мы отменяем стандартную отправку формы, чтобы обработать данные самостоятельно и показать результат без перезагрузки.
+
+Важная деталь: preventDefault() не останавливает распространение события по DOM. Это другая задача, для которой существует stopPropagation(). Сегодня подробно разбирать её не будем.
+
+Часть 7. Несколько распространённых ошибок
+Ошибка 1. Скобки при передаче обработчика
+Неправильно для обычного обработчика:
+button.addEventListener("click", handleClick());
+
+
+Правильно:
+button.addEventListener("click", handleClick);
+
+
+Ошибка 2. Попытка прочитать .value у несуществующего поля
+const input = document.querySelector("#missing");
+console.log(input.value);
+
+
+Если элемента нет, input будет равен null, и обращение к .value вызовет ошибку.
+Ошибка 3. Не отменили стандартную отправку формы
+Если нужно обработать форму без перезагрузки страницы, не забудь:
+event.preventDefault();
+
+
+Ошибка 4. Забыли обновить DOM
+Изменить переменную недостаточно:
+let count = 0;
+
+button.addEventListener("click", () => {
+    count++;
+});
+
+
+Число увеличивается, но пользователь не увидит изменения, пока ты не обновишь элемент:
+counter.textContent = count;
+
+
+
+Часть 8. Контрольные вопросы 🧠
+1. Для чего нужен addEventListener()?
+
+Немедленно вызывает функцию
+
+Регистрирует обработчик события
+
+Создаёт новый HTML-элемент
+
+
+
+2. Что произойдёт при button.addEventListener('click', sayHello)?
+
+sayHello вызовется немедленно
+
+sayHello будет вызвана при событии click
+
+sayHello никогда не вызовется
+
+
+
+3. Как получить текущее значение input?
+
+input.textContent
+
+input.innerHTML
+
+input.value
+
+
+
+4. Когда обычно происходит событие input?
+
+При изменении значения поля ввода
+
+Только при отправке формы
+
+Только при нажатии Enter
+
+
+
+5. Что означает event.type для обработчика click?
+
+Текст кнопки
+
+Тип события — click
+
+Элемент, на который нажали
+
+
+
+6. Что делает event.preventDefault()?
+
+Удаляет HTML-элемент
+
+Отменяет стандартное действие события, если оно отменяемо
+
+Всегда перезагружает страницу
+
+
+
+7. Где обычно обрабатывают событие submit?
+
+На форме
+
+Только на поле input
+
+На document.title
+
+
+
+8. Чем отличаются event.target и event.currentTarget?
+
+Это всегда одно и то же
+
+target — элемент, на котором произошло событие; currentTarget — элемент с текущим обработчиком
+
+target — всегда форма, currentTarget — всегда кнопка
+
+
+Отправить ответы на проверку
+
+Часть 9. Практические задания 💻
+Создай папку day-7, а в ней index.html и script.js. Для заданий 1–7 можешь использовать этот HTML:
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Практика Events</title>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <button id="helloButton">Поздороваться</button>
+    <p id="message"></p>
+
+    <button id="increase">Увеличить</button>
+    <p id="counter">0</p>
+
+    <input id="nameInput" type="text" placeholder="Введи имя">
+    <p id="greeting"></p>
+
+    <button id="inspectButton">
+        Нажми <strong>сюда</strong>
+    </button>
+
+    <form id="userForm">
+        <input id="userName" type="text" placeholder="Имя">
+        <button type="submit">Отправить</button>
+    </form>
+    <p id="formResult"></p>
+</body>
+</html>
+
+
+Выполняй задания по очереди: перед запуском нового можешь закомментировать код предыдущего.
+Задание 1 — обработчик click
+При нажатии на helloButton меняй текст message на:
+
+Привет! Ты нажал кнопку.
+
+Используй addEventListener().
+Задание 2 — счётчик
+При каждом нажатии на increase увеличивай число в counter на единицу.
+
+Условия:
+- начальное значение счётчика — 0;
+- используй переменную для хранения числа;
+- обновляй DOM после каждого нажатия.
+Задание 3 — реакция на ввод
+Когда пользователь вводит текст в nameInput, показывай в greeting:
+
+Привет, [имя]!
+
+Если поле пустое, показывай:
+
+Привет, незнакомец!
+
+Используй событие input и свойство value.
+Задание 4 — объект события
+Добавь обработчик click на inspectButton.
+
+Внутри обработчика выведи в консоль:
+- event.type;
+- event.target;
+- event.currentTarget.
+Понажимай на текст кнопки и непосредственно на слово внутри strong. Посмотри, чем отличаются target и currentTarget.
+Задание 5 — отправка формы
+При отправке userForm:
+1. Отмени стандартное поведение формы через preventDefault().
+2. Прочитай значение поля userName.
+3. Покажи в formResult сообщение Привет, [имя]!.
+Дополнительно: если поле пустое, покажи Введи своё имя.
+Задание 6 — переключатель текста
+Добавь в HTML:
+<button id="toggleButton">Показать/скрыть</button>
+<p id="toggleText">Секретный текст</p>
+
+
+Сделай так, чтобы кнопка скрывала и показывала текст по очереди. Можешь использовать element.style.display или класс CSS.
+
+Подсказка: для стилей используются строки "none" и "", если ты работаешь через style.display.
+Задание 7 — изменение класса по клику
+Добавь в HTML:
+<style>
+    .highlight {
+        background-color: yellow;
+        font-weight: bold;
+    }
+</style>
+
+<p id="highlightText">Нажми кнопку, чтобы выделить этот текст</p>
+<button id="highlightButton">Выделить</button>
+
+
+При каждом нажатии на кнопку переключай класс highlight у абзаца через classList.toggle().
+Задание 8 — добавление задачи через форму
+Создай отдельную простую страницу со следующим HTML:
+<form id="taskForm">
+    <input id="taskInput" type="text" placeholder="Новая задача">
+    <button type="submit">Добавить</button>
+</form>
+
+<ul id="taskList"></ul>
+
+
+Напиши JavaScript, который при отправке формы:
+1. Отменяет стандартную отправку через preventDefault().
+2. Берёт текст из taskInput.
+3. Если поле пустое, ничего не добавляет.
+4. Создаёт новый li через createElement().
+5. Записывает в него текст через textContent.
+6. Добавляет элемент в taskList.
+7. Очищает поле ввода.
+Не забудь, что для каждой новой задачи нужно создавать новый li внутри обработчика события — по аналогии с циклом из вчерашнего урока.
+
+Часть 10. 🏆 Финальный мини-проект — интерактивный список задач
+Сегодня объединим DOM из Дня 6 и события из Дня 7.
+
+Создай файл index.html:
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мой список задач</title>
+
+    <style>
+        .completed {
+            color: green;
+            text-decoration: line-through;
+        }
+
+        li {
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+    </style>
+
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <h1>Мои задачи</h1>
+
+    <form id="taskForm">
+        <input id="taskInput" type="text" placeholder="Новая задача">
+        <button type="submit">Добавить задачу</button>
+    </form>
+
+    <ul id="taskList"></ul>
+
+    <p id="counter"></p>
+</body>
+</html>
+
+
+Что нужно реализовать
+1. Начальный массив
+
+Создай массив:
+const tasks = [
+    { title: "Изучить DOM", completed: true },
+    { title: "Изучить события", completed: false }
+];
+
+
+2. Отображение задач
+
+Создай функцию renderTasks(), которая:
+- очищает содержимое taskList;
+- перебирает массив tasks через for...of;
+- для каждой задачи создаёт новый li;
+- устанавливает текст задачи;
+- если completed равно true, добавляет класс completed;
+- добавляет элемент в список;
+- обновляет счётчик задач.
+Для очистки содержимого списка можешь использовать:
+taskList.textContent = "";
+
+
+Счётчик должен показывать, например:
+
+Всего задач: 2
+
+3. Добавление задачи
+
+Подпишись на событие submit формы.
+- Отмени стандартное поведение.
+- Получи текст из поля ввода.
+- Если текст пустой, не добавляй задачу.
+- Создай новый объект задачи с completed: false.
+- Добавь объект в массив tasks через push().
+- Очисти поле ввода.
+- Вызови renderTasks().
+4. Отметка задачи выполненной
+
+Подпишись на событие click каждого созданного li.
+
+При нажатии:
+- переключи значение task.completed между true и false;
+- вызови renderTasks(), чтобы обновить оформление.
+Подсказка: при создании каждого li ты можешь добавить обработчик, который замыкает переменную текущей задачи.
+
+Например, внутри цикла for...of:
+item.addEventListener("click", () => {
+    // Здесь можно изменить текущую task
+});
+
+
+5. Проверка
+
+Убедись, что:
+- начальные две задачи отображаются;
+- выполненная задача зачёркнута;
+- новая задача добавляется после отправки формы;
+- пустая задача не добавляется;
+- клик по задаче переключает её статус;
+- счётчик обновляется после добавления.
+
+Как прислать работу
+Одним сообщением отправь:
+1. Ответы на 8 контрольных вопросов.
+2. Код практических заданий 1–8.
+3. Код script.js финального мини-проекта.
+Если что-то не получилось, всё равно присылай код — разберём вместе, без необходимости заранее доводить всё до идеала.
+
+Главная цель дня: понять, что addEventListener() связывает действия пользователя с твоим JavaScript-кодом. Вчера ты создавал элементы программно, а теперь пользователь сможет управлять ими сам. 💪🔥
+
+До встречи на проверке, ученик! 🥋
+
+(analysis) 
+We need final concatenation issue: previous partial final had day6? Here we need continue from partial. Actually assistant sent partial final in this same turn containing intro then terminal final contains rest. Already visible combined. Need nothing. Wait tool call? It's done. Need perhaps we should ensure no odd imagegen? okay. The output above includes final messages. We should terminate.
