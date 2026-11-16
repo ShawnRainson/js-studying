@@ -4006,3 +4006,599 @@ item.addEventListener("click", () => {
 
 (analysis) 
 We need final concatenation issue: previous partial final had day6? Here we need continue from partial. Actually assistant sent partial final in this same turn containing intro then terminal final contains rest. Already visible combined. Need nothing. Wait tool call? It's done. Need perhaps we should ensure no odd imagegen? okay. The output above includes final messages. We should terminate.
+
+День 8. Контекст this в JavaScript
+Новый учебный день
+ Блок 7 по плану
+
+
+Сегодня разберём одну из самых интересных и иногда запутанных особенностей JavaScript. После урока ты будешь понимать, почему this в разных функциях может указывать на разные объекты.
+1. Что такое this?
+this — специальное ключевое слово, которое указывает на определённый объект в зависимости от того, как была вызвана функция.
+
+Посмотрим на пример:
+const user = {
+    name: "Alex",
+
+    sayHello: function() {
+        console.log(this.name);
+    }
+};
+
+user.sayHello();
+
+
+Результат:
+Alex
+
+
+Почему?
+
+Потому что функция вызвана через объект user:
+user.sayHello();
+
+
+В данном случае this указывает на user.
+
+Можно представить это так:
+this.name
+
+
+Фактически обращается к:
+user.name
+
+
+Главное правило: у обычной функции значение this обычно определяется способом её вызова, а не местом, где она была объявлена.
+2. this в объектах
+Рассмотрим несколько примеров.
+
+Пример 1:
+const person = {
+    name: "Anna",
+    age: 25,
+
+    introduce: function() {
+        console.log(`My name is ${this.name}`);
+        console.log(`I am ${this.age} years old`);
+    }
+};
+
+person.introduce();
+
+
+Результат:
+My name is Anna
+I am 25 years old
+
+
+Пример 2:
+
+Метод может изменять свойства объекта:
+const counter = {
+    count: 0,
+
+    increase: function() {
+        this.count++;
+    }
+};
+
+counter.increase();
+counter.increase();
+
+console.log(counter.count); // 2
+
+
+Здесь this.count++ изменяет свойство count объекта counter.
+
+Пример 3:
+
+Один и тот же метод можно вызвать через разные объекты:
+const user1 = {
+    name: "Alex",
+    sayName: function() {
+        console.log(this.name);
+    }
+};
+
+const user2 = {
+    name: "Anna",
+    sayName: user1.sayName
+};
+
+user1.sayName(); // Alex
+user2.sayName(); // Anna
+
+
+Обрати внимание: функция одна и та же, но this разный!
+
+Это потому, что мы вызываем её через разные объекты.
+3. this в обычных функциях
+Теперь важный момент.
+
+Что произойдёт, если вызвать обычную функцию отдельно, без объекта?
+function showThis() {
+    console.log(this);
+}
+
+showThis();
+
+
+Здесь результат зависит от режима выполнения JavaScript.
+- В строгом режиме ("use strict") this будет undefined.
+- В нестрогом режиме в браузере this обычно будет указывать на глобальный объект window.
+Для наших дальнейших примеров будем ориентироваться на строгий режим.
+
+Например:
+"use strict";
+
+function showName() {
+    console.log(this);
+}
+
+showName(); // undefined
+
+
+А теперь сравни:
+"use strict";
+
+const user = {
+    name: "Alex",
+
+    showName: function() {
+        console.log(this.name);
+    }
+};
+
+user.showName(); // Alex
+
+
+В первом случае функция вызывается самостоятельно, во втором — как метод объекта.
+
+Запомни: обычная функция не привязана навсегда к объекту, внутри которого была написана.
+4. this в стрелочных функциях
+Вот здесь начинается самое интересное.
+
+Стрелочные функции ведут себя иначе: они не создают собственный this.
+
+Вместо этого они используют this из внешней области, в которой были созданы. Это называется лексическим this.
+
+Посмотрим:
+const user = {
+    name: "Alex",
+
+    sayHello: () => {
+        console.log(this.name);
+    }
+};
+
+user.sayHello();
+
+
+Многие ожидают увидеть "Alex", но это не так.
+
+Почему?
+
+Потому что стрелочная функция не получает this от объекта user.
+
+Она берёт this из внешнего контекста. В данном примере это не объект user.
+
+Сравни два варианта:
+Обычная функция
+const user = {
+    name: "Alex",
+    sayHello: function() {
+        console.log(this.name);
+    }
+};
+
+user.sayHello(); // Alex
+
+
+this = user
+
+Стрелочная функция
+const user = {
+    name: "Alex",
+    sayHello: () => {
+        console.log(this.name);
+    }
+};
+
+user.sayHello();
+
+
+this берётся снаружи
+
+Поэтому для методов объектов обычно используют обычные функции или сокращённую запись методов:
+const user = {
+    name: "Alex",
+
+    sayHello() {
+        console.log(this.name);
+    }
+};
+
+
+Это тоже обычный метод, и здесь this работает как ожидается.
+5. Стрелочная функция внутри метода объекта
+Но стрелочные функции очень полезны внутри обычных методов.
+
+Посмотри:
+const user = {
+    name: "Alex",
+
+    sayHello() {
+        const showMessage = () => {
+            console.log(`Hello, ${this.name}`);
+        };
+
+        showMessage();
+    }
+};
+
+user.sayHello();
+
+
+Результат:
+Hello, Alex
+
+
+Почему работает?
+1. user.sayHello() вызывает обычный метод.
+2. Внутри метода this указывает на user.
+3. Стрелочная функция берёт this из внешнего метода.
+4. Поэтому внутри стрелочной функции this тоже указывает на user.
+Это очень распространённый приём.
+6. Методы call(), apply() и bind()
+Теперь научимся самостоятельно управлять значением this.
+
+Для этого существуют три метода.
+call()
+call() вызывает функцию и позволяет явно указать, чему будет равен this.
+function introduce() {
+    console.log(`My name is ${this.name}`);
+}
+
+const user = {
+    name: "Alex"
+};
+
+introduce.call(user);
+
+
+Результат:
+My name is Alex
+
+
+То есть мы сказали функции:
+
+«Выполнись так, будто this указывает на объект user».
+
+call() также позволяет передавать аргументы:
+function introduce(city, age) {
+    console.log(`${this.name}, ${age}, ${city}`);
+}
+
+const user = {
+    name: "Alex"
+};
+
+introduce.call(user, "Prague", 25);
+
+
+apply()
+apply() работает практически так же, как call().
+
+Главное отличие — аргументы передаются массивом.
+function introduce(city, age) {
+    console.log(`${this.name}, ${age}, ${city}`);
+}
+
+const user = {
+    name: "Alex"
+};
+
+introduce.apply(user, ["Prague", 25]);
+
+
+Сравнение:
+introduce.call(user, "Prague", 25);
+
+introduce.apply(user, ["Prague", 25]);
+
+
+Метод	Передача аргументов
+call()	Через запятую
+apply()	Одним массивом
+
+bind()
+А теперь самое интересное.
+
+bind() не вызывает функцию сразу. Он создаёт новую функцию с заранее привязанным значением this.
+function sayHello() {
+    console.log(`Hello, ${this.name}`);
+}
+
+const user = {
+    name: "Alex"
+};
+
+const boundFunction = sayHello.bind(user);
+
+boundFunction();
+
+
+Результат:
+Hello, Alex
+
+
+Можно вызвать boundFunction() позже, а this останется привязанным к user.
+
+Сравним:
+Метод	Что делает
+call()	Вызывает функцию сразу
+apply()	Вызывает функцию сразу
+bind()	Создаёт новую привязанную функцию
+
+
+7. Частая ошибка: потеря this
+Посмотри на пример:
+const user = {
+    name: "Alex",
+
+    sayHello() {
+        console.log(this.name);
+    }
+};
+
+const hello = user.sayHello;
+
+hello();
+
+
+Почему здесь не обязательно будет "Alex"?
+
+Потому что мы сохранили ссылку на функцию в отдельную переменную, а затем вызвали её самостоятельно.
+
+В строгом режиме this будет undefined.
+
+Исправить можно через bind():
+const hello = user.sayHello.bind(user);
+
+hello(); // Alex
+
+
+Это особенно полезно, когда передаёшь методы объектов в качестве callback-функций.
+
+Часть 2. Контрольные вопросы
+Ответь своими словами. Можно приводить примеры.
+
+Вопрос 1. Что такое this в JavaScript?
+
+Вопрос 2. На какой объект указывает this при вызове user.sayHello(), если sayHello — обычный метод?
+
+Вопрос 3. Почему стрелочная функция внутри объекта не получает this от самого объекта?
+
+Вопрос 4. Что выведет код?
+const user = {
+    name: "Alex",
+
+    sayName() {
+        console.log(this.name);
+    }
+};
+
+const anotherUser = {
+    name: "Anna",
+    sayName: user.sayName
+};
+
+anotherUser.sayName();
+
+
+Вопрос 5. Что выведет код в строгом режиме?
+"use strict";
+
+function test() {
+    console.log(this);
+}
+
+test();
+
+
+Вопрос 6. Чем call() отличается от apply()?
+
+Вопрос 7. Чем bind() отличается от call()?
+
+Вопрос 8. Почему этот код может не вывести "Alex"?
+const user = {
+    name: "Alex",
+
+    sayName() {
+        console.log(this.name);
+    }
+};
+
+const fn = user.sayName;
+fn();
+
+
+
+Часть 3. Практические задания
+Все задания выполни самостоятельно. Можно использовать console.log() для проверки.
+Задание 1 — метод объекта
+Создай объект person со свойствами:
+- name: "Alex"
+- age: 25
+Добавь метод introduce(), который выводит:
+My name is Alex and I am 25 years old.
+
+
+Используй this.
+Задание 2 — изменение свойства
+Создай объект:
+const counter = {
+    count: 0
+};
+
+
+Добавь два метода:
+- increase() — увеличивает count на 1.
+- decrease() — уменьшает count на 1.
+Вызови increase() три раза, decrease() один раз.
+
+Ожидаемый результат:
+2
+
+
+Задание 3 — разные объекты, один метод
+Создай два объекта:
+const user1 = {
+    name: "Alex"
+};
+
+const user2 = {
+    name: "Anna"
+};
+
+
+Создай одну обычную функцию showName(), которая выводит this.name.
+
+Вызови её для обоих объектов, используя call().
+Задание 4 — применение apply()
+Создай функцию:
+function introduce(city, profession) {
+    console.log(`${this.name} lives in ${city} and works as ${profession}`);
+}
+
+
+Создай объект:
+const person = {
+    name: "Mike"
+};
+
+
+Вызови функцию с помощью apply().
+
+Передай аргументы:
+- город — "Prague";
+- профессия — "Developer".
+Задание 5 — применение bind()
+Создай объект:
+const user = {
+    name: "Anna"
+};
+
+
+Создай обычную функцию:
+function sayHello() {
+    console.log(`Hello, ${this.name}!`);
+}
+
+
+Используя bind(), создай новую функцию helloAnna.
+
+Вызови её два раза.
+Задание 6 — обычная или стрелочная?
+Исправь код так, чтобы он выводил "Alex":
+const user = {
+    name: "Alex",
+
+    sayHello: () => {
+        console.log(this.name);
+    }
+};
+
+user.sayHello();
+
+
+Объясни, почему твоё исправление работает.
+Задание 7 — потеря контекста
+Исправь код, чтобы sayName() выводил "Alex":
+const user = {
+    name: "Alex",
+
+    sayName() {
+        console.log(this.name);
+    }
+};
+
+const fn = user.sayName;
+
+fn();
+
+
+Используй bind().
+Задание 8 — закрепление
+Что выведет этот код? Напиши результат каждого вызова и объясни почему.
+const user1 = {
+    name: "Alex",
+
+    sayName() {
+        console.log(this.name);
+    }
+};
+
+const user2 = {
+    name: "Anna"
+};
+
+user1.sayName();
+
+user1.sayName.call(user2);
+
+const fn = user1.sayName.bind(user2);
+
+fn();
+
+
+
+Часть 4. Финальный мини-проект — система пользователей
+Теперь применим this, call() и bind() в одной небольшой программе.
+
+Создай массив пользователей:
+const users = [
+    { name: "Alex", age: 25, city: "Prague" },
+    { name: "Anna", age: 22, city: "Brno" },
+    { name: "Mike", age: 30, city: "Ostrava" }
+];
+
+
+Требования к проекту:
+
+1. Создай функцию introduce(), которая выводит имя, возраст и город пользователя, используя this.
+
+Ожидаемый формат:
+Hello! My name is Alex. I am 25 years old and live in Prague.
+
+
+2. Перебери массив users циклом for...of и вызови introduce() для каждого пользователя с помощью call().
+3. Создай функцию showWelcome(), которая выводит:
+Welcome, Alex!
+
+
+Она тоже должна использовать this.name.
+4. Создай отдельную функцию welcomeAlex, привязав showWelcome к первому пользователю через bind().
+5. Вызови welcomeAlex() отдельно от массива.
+Дополнительное задание, если захочешь: добавь каждому пользователю метод haveBirthday(), который увеличивает его возраст на один год с помощью this.
+
+Чек-лист Дня 8
+Прогресс урока
+0/8
+
+
+
+[ ] Понял, что такое this
+[ ] Разобрал this в методах объектов
+[ ] Понял отличие обычных и стрелочных функций
+[ ] Разобрал call() и apply()
+[ ] Разобрал bind()
+[ ] Выполнил контрольные вопросы
+[ ] Выполнил практические задания
+[ ] Сделал мини-проект
+
+Правило нашего обучения: присылай ответы на вопросы, все практические задания и мини-проект одним сообщением, когда закончишь. Я проверю каждую часть, объясню ошибки и отмечу, что уже усвоено.
+
+Ну что, ученик, сегодня особое внимание удели разнице между обычной и стрелочной функцией. Это одна из ключевых идей всего урока.
+
+Удачи! Сенсей на связи. 🥋
