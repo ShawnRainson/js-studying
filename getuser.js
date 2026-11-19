@@ -11,10 +11,9 @@ function getUser(id) {
             for(let user of users) {
                 if(user.id == id) {
                     resolve(user);
-                } else {
-                    reject("User not found");
                 };
             };
+            reject("User not found");
         }, 2000);
     });
 };
@@ -33,3 +32,4 @@ async function showUser(id) {
 
 showUser(1);
 showUser(10);
+showUser(2);
